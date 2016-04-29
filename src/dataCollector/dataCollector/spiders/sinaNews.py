@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import scrapy
 import os
 from dataCollector.items import DatacollectorItem
@@ -6,7 +7,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-year = 2004
+year = 2006
 base_directory = "../../data/" + str(year) + "/"
 base_url = "http://news.sina.com.cn/old1000/news1000_"
 
@@ -28,8 +29,11 @@ class sinaNewsSpider(scrapy.Spider):
     def news_parse(self, response):
         item = response.meta['item']
 
-        title = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]')\
-            .xpath('font/text()').extract()[0]
+        if (len(response.xpath('//h1')) > 0):
+            title = response.xpath('//h1/text()').extract()[0]
+        elif len(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') > 0):
+            title = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]')\
+                .xpath('font/text()').extract()[0]
 
         for sel in response.xpath('//*[contains(concat(" ", normalize-space(@id), " "), " zoom ")]'):
             text = ""
