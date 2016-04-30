@@ -32,7 +32,7 @@ class sinaNewsSpider(scrapy.Spider):
 
         if (len(response.xpath('//h1/text()')) > 0):
             title = response.xpath('//h1/text()').extract()[0]
-        elif type(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') == type([]) and len(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') > 0):
+        elif type(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]')) == type([]) and len(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') > 0):
             title = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]')\
                 .xpath('font/text()').extract()[0]
 
