@@ -2,6 +2,7 @@
 import scrapy
 import os
 from dataCollector.items import DatacollectorItem
+from urlparse import urljoin
 
 import sys
 reload(sys)
@@ -29,9 +30,9 @@ class sinaNewsSpider(scrapy.Spider):
     def news_parse(self, response):
         item = response.meta['item']
 
-        if (len(response.xpath('//h1')) > 0):
+        if (len(response.xpath('//h1/text()')) > 0):
             title = response.xpath('//h1/text()').extract()[0]
-        elif len(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') > 0):
+        elif type(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') == type([]) and len(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]') > 0):
             title = response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " f24 ")]')\
                 .xpath('font/text()').extract()[0]
 
@@ -55,4 +56,6 @@ class sinaNewsSpider(scrapy.Spider):
             item = DatacollectorItem()
             item['url'] = sel.xpath('@href').extract()[0]
             item['title'] = sel.xpath('text()').extract()[0]
+            if not item['url'].startswith("http"):
+                item['url'] = "http://www.sina.com.cn" + item['url']
             yield scrapy.Request(url=item['url'], meta={'item': item}, callback=self.news_parse)
