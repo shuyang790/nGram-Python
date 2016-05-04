@@ -8,9 +8,10 @@ def walk(rootDir, outputFile):
     list_dirs = os.walk(rootDir)
     for root, dirs, files in list_dirs:
         for f in files:
-            print os.path.join(root, f)
-            with open(os.path.join(root, f)) as fi:
-                content = fi.read()
+#            print os.path.join(root, f)
+            fi = open(os.path.join(root, f), "r")
+            content = fi.read()
+            fi.close()
             outputFile.write(content)
 
 def main():

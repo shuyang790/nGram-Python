@@ -7,7 +7,7 @@ This repo contains **dataCollector** (which crawls data from Sina news website),
 
 ### dataCollector
 
-Spiders to crawl Sina news texts (with titles), using Python's framework [Scrapy](http://scrapy.org/).
+Spiders to crawl Sina news texts (with titles), using Python's _Requests_ + _BeautifulSoup_.
 
 Data source:
 From daily news list "http://news.sina.com.cn/old1000/news1000_YYYYMMDD.shtml", where `YYYY`, `MM`, `DD` are year, month, and day respectively.
