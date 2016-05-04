@@ -62,9 +62,6 @@ class Spider():
             f.write(content)
             f.close()
             print r.content[:20]
-        #tag = soup.find_all("span", attrs={"class":"title14"})
-        print tag
-        pass
 
 def main():
     print "Welcome!"
