@@ -1,11 +1,11 @@
 #!/usr/bin/python
-import os, time
+import os, time, sys
 import re
 import urlparse
 import requests
 from bs4 import BeautifulSoup
 
-agent="Mozilla/5.0 (X11; U; Linux i686 (x86_64); zh-CN; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2"
+agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.86 Safari/537.36"
 
 class Spider():
     def __init__(self, year, month, day):
@@ -19,10 +19,19 @@ class Spider():
         self.s.headers.update({'Referer': self.host })
 
     def parse_list(self):
-        r = self.s.get(self.url)
+        print "getting url: " + self.url,
+        sys.stdout.flush()
+        try:
+            r = self.s.get(self.url, timeout=5)
+        except:
+            time.sleep(10)
+            return
+        print " done"
+        sys.stdout.flush()
 #        print r.content
         soup = BeautifulSoup(r.content.decode('gbk','ignore'), 'lxml' )
         tags = soup.select("ul li a")
+        print "tags got"
         for _tag in tags:
             tag = str(_tag)
             start = len("<a href=\"")
@@ -39,12 +48,16 @@ class Spider():
             get_content = 0
             while get_content == 0:
                 try:
-                    page_r = self.s.get(url)
+                    print "\tgetting page: " + url + ", num-try = " + str(num_try) + "..."
+                    sys.stdout.flush()
+                    page_r = self.s.get(url, timeout=3)
                     get_content = 1
+                    print "\tdone"
+                    sys.stdout.flush()
                 except:
-                    time.sleep(2)
+                    time.sleep(2 + num_try)
                     num_try += 1
-                    if num_try > 10:
+                    if num_try > 5:
                         break
             if num_try > 10:
                 continue
@@ -68,7 +81,7 @@ def main():
     year = 2006
     month = 4
     os.system("mkdir results")
-    for day in range(1, 31):
+    for day in range(6, 10):
         if month == 2 and day > 28:
             break
         spider = Spider(year, month, day)
