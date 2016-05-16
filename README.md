@@ -1,5 +1,5 @@
 # nGram-Python
-nGram: New Word Recognition (Chinese news texts).
+## nGram: New Word Recognition (Chinese news texts).
 
 This repo contains **dataCollector** (which crawls data from Sina news website), **dataCleaner** (which tidies the crawled data and aggregates them), **nGram** (which counts n-gram words and produce nGram data), and **wordRecognition** (which uses the nGram data to recognize chinese words).
 
@@ -31,3 +31,21 @@ The raw data is acquired by `dataCollector` and classified by date.
 The data contain Sina news texts with labels like `<p></p>`, and the Cinese-text-only result
 is acquired by `dataCleaner` as `data.txt` (using texts of 2006 January - April, totally
 `1.9GB` approximately, `1,990,660,672 bytes` precisely).
+
+## `nGram.py` utility
+
+`nGram.py` is a command line utility. Usage:
+
+```bash
+$ src/nGram/nGram.py
+nGram.py: count nGram words in Chinese Texts
+Usage:
+         ./nGram.py inputFileName nMin nMax [outputFileName]
+Explanation:
+         inputFileName -- Name of the input data text
+         nMin, nMax -- the range of N for n-gram
+         outputFileName -- (optional) Name of the output nGram text
+Example:
+         ./nGram.py data.txt 2 5
+$
+```

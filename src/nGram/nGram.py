@@ -11,6 +11,7 @@ sys.setdefaultencoding('utf-8')
 import delims
 
 gramN = [2, 3, 4, 5]
+neighborFilter = 0
 
 def countNGram(n, word):
     ret = {}
@@ -38,6 +39,7 @@ def nGram(inputFileName, outputFileName):
 
     inputFile = open(inputFileName, "r")
     lastPercent = 0.0
+    sentences = []
     for _inputLine in inputFile:
         curLine += 1
         curPercent = float(curLine) / float(totalLine)
@@ -65,20 +67,32 @@ def nGram(inputFileName, outputFileName):
             else:
                 rawDict.update({curWord: 1})
 
-        # if inputLine != "":
-        #     print "--LINE: #" + inputLine + "#"
-        #     print "-----rawDict: ",
-        #     for k, v in rawDict.items():
-        #         print '"' + k + '":' + str(v) + ',\t',
-        #     print '#'
         for n in gramN:
             for word, freq in rawDict.items():
+                sentences.append(word)
                 for k, v in countNGram(n, word.decode('utf-8')).items():
                     if k in bigTable[n-gramN[0]]:
                         bigTable[n-gramN[0]][k] += freq * v
                     else:
                         bigTable[n-gramN[0]].update({k: v})
     inputFile.close()
+
+    if neighborFilter:
+        for sentence in sentences:
+            for n in gramN:
+                for i in range(0, len(sentence)-n-1):
+                    word1 = sentence[i:i+n]
+                    word2 = sentence[i+1:i+n+1]
+                    if word1 in bigTable[n-gramN[0]] and word2 in bigTable[n-gramN[0]]:
+                        freq1 = bigTable[n-gramN[0]][word1]
+                        freq2 = bigTable[n-gramN[0]][word2]
+                        if freq1 < 1.2 * freq2 and freq2 < 1.2 * freq1:
+                            bigTable[n-gramN[0]].update({word1: 0})
+                            bigTable[n-gramN[0]].update({word2: 0})
+                        elif freq1 < 0.1 * freq2:
+                            bigTable[n-gramN[0]].update({word1: 0})
+                        elif freq2 < 0.1 * freq1:
+                            bigTable[n-gramN[0]].update({word2: 0})
 
     outputFile = open(outputFileName, "w")
     for n in gramN:
@@ -89,6 +103,8 @@ def nGram(inputFileName, outputFileName):
                 outputFile.write(k + "|" + str(v) + "\n")
     outputFile.close()
 
+    return bigTable
+
 def main():
     L = len(argv)
     if L < 4 or L > 5:
@@ -97,6 +113,8 @@ def main():
         print "Explanation:\n\t inputFileName -- Name of the input data text"
         print "\t nMin, nMax -- the range of N for n-gram"
         print "\t outputFileName -- (optional) Name of the output nGram text"
+        print "\t                  If it is omitted, than store result to 'results.txt'"
+        print "\t                  and do the neighbor-word-filtering."
         print "Example:\n\t ./nGram.py data.txt 2 5"
         return
     if os.path.isfile(argv[1]) == False:
@@ -106,6 +124,8 @@ def main():
     if L == 5:
         outputFileName = argv[4]
     else:
+        global neighborFilter
+        neighborFilter = 1
         outputFileName = "result.txt"
     try:
         nMin = int(argv[2])
